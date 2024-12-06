@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.coupon.coupon.domain.Coupon;
 import org.coupon.coupon.domain.CouponType;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -40,4 +41,30 @@ public class CouponEntity {
     private LocalDateTime updatedAt;
 
     private LocalDateTime suspendedAt;
+
+    public static CouponEntity from(Coupon coupon) {
+        CouponEntity couponEntity = new CouponEntity();
+        couponEntity.id = coupon.getId();
+        couponEntity.couponType = coupon.getCouponType();
+        couponEntity.description = coupon.getDescription();
+        couponEntity.totalCouponCount = coupon.getTotalCouponCount();
+        couponEntity.issuedCouponCount = coupon.getIssuedCouponCount();
+        couponEntity.createdAt = coupon.getCreatedAt();
+        couponEntity.updatedAt = coupon.getUpdatedAt();
+        couponEntity.suspendedAt = coupon.getSuspendedAt();
+        return couponEntity;
+    }
+
+    public Coupon toDomain() {
+        return Coupon.builder()
+                .id(id)
+                .couponType(couponType)
+                .description(description)
+                .totalCouponCount(totalCouponCount)
+                .issuedCouponCount(issuedCouponCount)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .suspendedAt(suspendedAt)
+                .build();
+    }
 }

@@ -1,7 +1,12 @@
 package org.coupon.coupon.domain;
 
+import lombok.Builder;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 
+@Builder
+@Getter
 public class Coupon {
     private Long id;
     private CouponType couponType;
@@ -13,11 +18,11 @@ public class Coupon {
     private LocalDateTime suspendedAt;
 
     public static Coupon create(CouponCreate couponCreate) {
-        Coupon coupon = new Coupon();
-        coupon.couponType = couponCreate.getCouponType();
-        coupon.description = couponCreate.getDescription();
-        coupon.totalCouponCount = couponCreate.getTotalCouponCount();
-        coupon.issuedCouponCount = couponCreate.getIssuedCouponCount();
-        return coupon;
+        return Coupon.builder()
+                .couponType(couponCreate.getCouponType())
+                .description(couponCreate.getDescription())
+                .totalCouponCount(couponCreate.getTotalCouponCount())
+                .issuedCouponCount(couponCreate.getIssuedCouponCount())
+                .build();
     }
 }
