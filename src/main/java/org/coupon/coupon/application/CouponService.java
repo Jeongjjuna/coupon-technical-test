@@ -1,6 +1,8 @@
 package org.coupon.coupon.application;
 
 import lombok.RequiredArgsConstructor;
+import org.coupon.common.exception.CouponException;
+import org.coupon.common.exception.CouponExceptionStatus;
 import org.coupon.coupon.application.port.CouponRepository;
 import org.coupon.coupon.domain.Coupon;
 import org.coupon.coupon.domain.CouponCreate;
@@ -15,5 +17,10 @@ public class CouponService {
         Coupon coupon = Coupon.create(couponCreate);
 
         return couponRepository.save(coupon);
+    }
+
+    public Coupon getCoupon(Long couponId) {
+        return couponRepository.findById(couponId)
+                .orElseThrow(() -> new CouponException(CouponExceptionStatus.NOT_FOUND));
     }
 }
