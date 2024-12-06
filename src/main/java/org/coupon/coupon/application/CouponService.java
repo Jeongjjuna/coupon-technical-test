@@ -19,6 +19,13 @@ public class CouponService {
         return couponRepository.save(coupon);
     }
 
+    public Coupon issue(Long couponId, Long memberId) {
+        Coupon coupon = getCoupon(couponId);
+        coupon.issue();
+
+        return couponRepository.save(coupon);
+    }
+
     public Coupon getCoupon(Long couponId) {
         return couponRepository.findById(couponId)
                 .orElseThrow(() -> new CouponException(CouponExceptionStatus.NOT_FOUND));

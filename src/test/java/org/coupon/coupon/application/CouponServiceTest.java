@@ -76,4 +76,26 @@ class CouponServiceTest {
                 .extracting("errorStatus")
                 .isEqualTo(CouponExceptionStatus.NOT_FOUND);
     }
+
+    @DisplayName("쿠폰을 발행해서 발급 수량을 증가시킨다.")
+    @Test
+    void issueCoupon() {
+        // given
+        Coupon coupon = Coupon.builder()
+                .couponType(CouponType.BASIC)
+                .description("description")
+                .totalCouponCount(100)
+                .issuedCouponCount(0)
+                .build();
+        Long couponId = couponJpaRepository.save(CouponEntity.from(coupon))
+                .toDomain()
+                .getId();
+        Long memberId = 1L;
+
+        // when
+        Coupon issuedCoupon = couponService.issue(couponId, memberId);
+
+        // then
+        assertThat(issuedCoupon.getIssuedCouponCount()).isEqualTo(1);
+    }
 }

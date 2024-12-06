@@ -2,6 +2,8 @@ package org.coupon.coupon.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.coupon.common.exception.CouponException;
+import org.coupon.common.exception.CouponExceptionStatus;
 
 import java.time.LocalDateTime;
 
@@ -24,5 +26,12 @@ public class Coupon {
                 .totalCouponCount(couponCreate.getTotalCouponCount())
                 .issuedCouponCount(couponCreate.getIssuedCouponCount())
                 .build();
+    }
+
+    public void issue() {
+        if (totalCouponCount < issuedCouponCount + 1) {
+            throw new CouponException(CouponExceptionStatus.NO_MORE_COUPONS);
+        }
+        issuedCouponCount++;
     }
 }
