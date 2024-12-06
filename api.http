@@ -1,0 +1,9 @@
+### 쿠폰 생성 요청
+POST http://localhost:8080/v1/coupons
+Content-Type: application/json
+
+{
+  "coupon_type": "BASIC",
+  "description": "일반 쿠폰",
+  "total_coupon_count": 100
+}
