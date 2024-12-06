@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("[controller 단위테스트]")
+@DisplayName("[controller 단위테스트] CouponController")
 @WebMvcTest(controllers = CouponController.class)
 class CouponControllerTest {
 

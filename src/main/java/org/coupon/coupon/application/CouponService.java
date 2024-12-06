@@ -19,7 +19,7 @@ public class CouponService {
         return couponRepository.save(coupon);
     }
 
-    public Coupon issue(Long couponId, Long memberId) {
+    public Coupon issue(Long couponId) {
         Coupon coupon = getCoupon(couponId);
         coupon.issue();
 

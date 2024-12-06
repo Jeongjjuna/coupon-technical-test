@@ -90,10 +90,9 @@ class CouponServiceTest {
         Long couponId = couponJpaRepository.save(CouponEntity.from(coupon))
                 .toDomain()
                 .getId();
-        Long memberId = 1L;
 
         // when
-        Coupon issuedCoupon = couponService.issue(couponId, memberId);
+        Coupon issuedCoupon = couponService.issue(couponId);
 
         // then
         assertThat(issuedCoupon.getIssuedCouponCount()).isEqualTo(1);
