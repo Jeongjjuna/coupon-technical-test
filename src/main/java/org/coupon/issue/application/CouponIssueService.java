@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.coupon.common.exception.CouponException;
 import org.coupon.common.exception.CouponExceptionStatus;
 import org.coupon.coupon.application.CouponService;
+import org.coupon.coupon.domain.Coupon;
 import org.coupon.issue.application.port.CouponCodeGenerator;
 import org.coupon.issue.application.port.CouponIssueRepository;
 import org.coupon.issue.domain.CouponIssue;
@@ -21,10 +22,14 @@ public class CouponIssueService {
 
     @Transactional
     public String issueCouponCode(CouponIssueCommand command) {
+        Coupon coupon = couponService.getCoupon(command.getCouponId());
+
+        checkAlreadySuspended(coupon);
+
         String couponCode = couponCodeGenerator.generate();
         CouponIssue couponIssue = CouponIssue.create(command, couponCode);
-
         couponIssueRepository.save(couponIssue);
+
         couponService.issue(command.getCouponId());
 
         return couponCode;
@@ -33,7 +38,9 @@ public class CouponIssueService {
     @Transactional
     public void redeem(CouponRedeemCommand command) {
         CouponIssue couponIssue = getCouponIssue(command.getCouponCode());
+        Coupon coupon = couponService.getCoupon(couponIssue.getCouponId());
 
+        checkAlreadySuspended(coupon);
         checkCouponCodeIssuer(couponIssue, command);
         checkAlreadyUsed(couponIssue);
 
@@ -44,6 +51,12 @@ public class CouponIssueService {
     public CouponIssue getCouponIssue(String couponCode) {
         return couponIssueRepository.findByCouponCode(couponCode)
                 .orElseThrow(() -> new CouponException(CouponExceptionStatus.NOT_FOUND_COUPON_ISSUE));
+    }
+
+    private void checkAlreadySuspended(Coupon coupon) {
+        if (coupon.isSuspended()) {
+            throw new CouponException(CouponExceptionStatus.ALREADY_SUSPENDED_COUPON_CODE);
+        }
     }
 
     private void checkAlreadyUsed(CouponIssue couponIssue) {

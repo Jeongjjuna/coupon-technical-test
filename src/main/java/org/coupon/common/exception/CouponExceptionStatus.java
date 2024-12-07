@@ -21,6 +21,7 @@ public enum CouponExceptionStatus {
     // 409
     NO_MORE_COUPONS(HttpStatus.CONFLICT, "쿠폰 재고가 부족합니다."),
     ALREADY_USED_COUPON_CODE(HttpStatus.CONFLICT, "이미 사용된 쿠폰코드 입니다."),
+    ALREADY_SUSPENDED_COUPON_CODE(HttpStatus.CONFLICT, "사용이 정지된 쿠폰유형 입니다."),
     NOT_COUPON_CODE_ISSUER(HttpStatus.CONFLICT, "쿠폰 발급자가 아닙니다.");
 
     private final HttpStatus httpStatus;

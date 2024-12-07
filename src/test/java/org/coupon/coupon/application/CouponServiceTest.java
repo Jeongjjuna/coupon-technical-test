@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("[service 통합테스트] CouponService")
@@ -28,6 +29,25 @@ class CouponServiceTest {
 
     @Autowired
     private CouponService couponService;
+
+    @DisplayName("쿠폰을 정지할 수 있다.")
+    @Test
+    void suspendCoupon() {
+        // given
+        Coupon coupon = Coupon.builder()
+                .couponType(CouponType.BASIC)
+                .description("description")
+                .totalCouponCount(100)
+                .issuedCouponCount(0)
+                .build();
+        Long couponId = couponJpaRepository.save(CouponEntity.from(coupon))
+                .toDomain()
+                .getId();
+
+        // when & then
+        assertThatCode(() -> couponService.suspend(couponId))
+                .doesNotThrowAnyException();
+    }
 
     @DisplayName("쿠폰을 생성할 수 있다.")
     @Test

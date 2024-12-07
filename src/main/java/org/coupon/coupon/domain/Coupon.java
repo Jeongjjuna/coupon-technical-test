@@ -34,4 +34,15 @@ public class Coupon {
         }
         issuedCouponCount++;
     }
+
+    public void suspend() {
+        if (isSuspended()) {
+            throw new CouponException(CouponExceptionStatus.ALREADY_SUSPENDED_COUPON_CODE);
+        }
+        suspendedAt = LocalDateTime.now();
+    }
+
+    public boolean isSuspended() {
+        return suspendedAt != null;
+    }
 }

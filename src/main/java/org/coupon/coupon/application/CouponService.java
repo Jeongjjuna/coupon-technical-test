@@ -26,6 +26,12 @@ public class CouponService {
         return couponRepository.save(coupon);
     }
 
+    public void suspend(Long couponId) {
+        Coupon coupon = getCoupon(couponId);
+        coupon.suspend();
+        couponRepository.save(coupon);
+    }
+
     public Coupon getCoupon(Long couponId) {
         return couponRepository.findById(couponId)
                 .orElseThrow(() -> new CouponException(CouponExceptionStatus.NOT_FOUND_COUPON));

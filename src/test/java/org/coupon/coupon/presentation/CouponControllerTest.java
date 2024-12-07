@@ -36,6 +36,20 @@ class CouponControllerTest {
     @MockBean
     private CouponService couponService;
 
+    @DisplayName("쿠폰을 정지 할 수 있다.")
+    @Test
+    void suspendCoupon() throws Exception {
+        // given
+        long couponId = 1L;
+
+        // when
+        var result = mockMvc.perform(post("/v1/coupons/" + couponId + "/suspend"));
+
+        // then
+        result.andDo(print());
+        result.andExpect(status().isOk());
+    }
+
     @DisplayName("쿠폰을 등록할 수 있다.")
     @Test
     void createCoupon() throws Exception {

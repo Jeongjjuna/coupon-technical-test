@@ -18,6 +18,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -37,6 +39,42 @@ class CouponIssueServiceTest {
 
     @Autowired
     private CouponIssueService couponIssueService;
+
+    @DisplayName("정지된 쿠폰유형의 쿠폰코드를 발급할 수 없다.")
+    @Test
+    void issueCouponCodeSuspendCoupon() {
+        // given
+        Coupon coupon = createSuspendCoupon();
+
+        CouponIssueCommand couponIssueCommand = CouponIssueCommand.builder()
+                .couponId(coupon.getId())
+                .memberId(999L)
+                .build();
+
+        // when & then
+        assertThatThrownBy(() -> couponIssueService.issueCouponCode(couponIssueCommand))
+                .isInstanceOf(CouponException.class)
+                .extracting("errorStatus")
+                .isEqualTo(CouponExceptionStatus.ALREADY_SUSPENDED_COUPON_CODE);
+    }
+
+    @DisplayName("정지된 쿠폰유형의 쿠폰코드는 사용할 수 없다.")
+    @Test
+    void redeemCouponCodeSuspendCoupon() {
+        Coupon coupon = createSuspendCoupon();
+        CouponIssue couponIssue = createValidCouponIssue(10L, coupon.getId());
+
+        CouponRedeemCommand command = CouponRedeemCommand.builder()
+                .memberId(couponIssue.getMemberId())
+                .couponCode(couponIssue.getCouponCode())
+                .build();
+
+        // when & then
+        assertThatThrownBy(() -> couponIssueService.redeem(command))
+                .isInstanceOf(CouponException.class)
+                .extracting("errorStatus")
+                .isEqualTo(CouponExceptionStatus.ALREADY_SUSPENDED_COUPON_CODE);
+    }
 
     @DisplayName("쿠폰 코드를 발급할 수 있다.")
     @Test
@@ -143,6 +181,18 @@ class CouponIssueServiceTest {
                 .description("description")
                 .totalCouponCount(100)
                 .issuedCouponCount(0)
+                .build();
+        return couponJpaRepository.save(CouponEntity.from(coupon))
+                .toDomain();
+    }
+
+    private Coupon createSuspendCoupon() {
+        Coupon coupon = Coupon.builder()
+                .couponType(CouponType.BASIC)
+                .description("description")
+                .totalCouponCount(100)
+                .issuedCouponCount(0)
+                .suspendedAt(LocalDateTime.now())
                 .build();
         return couponJpaRepository.save(CouponEntity.from(coupon))
                 .toDomain();
