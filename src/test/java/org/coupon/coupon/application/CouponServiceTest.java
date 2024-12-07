@@ -74,7 +74,7 @@ class CouponServiceTest {
         assertThatThrownBy(() -> couponService.getCoupon(99999L))
                 .isInstanceOf(CouponException.class)
                 .extracting("errorStatus")
-                .isEqualTo(CouponExceptionStatus.NOT_FOUND);
+                .isEqualTo(CouponExceptionStatus.NOT_FOUND_COUPON);
     }
 
     @DisplayName("쿠폰을 발행해서 발급 수량을 증가시킨다.")

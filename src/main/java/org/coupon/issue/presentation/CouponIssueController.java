@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.coupon.common.response.Api;
 import org.coupon.issue.application.CouponIssueService;
 import org.coupon.issue.presentation.request.CouponIssueRequest;
+import org.coupon.issue.presentation.request.CouponRedeemRequest;
 import org.coupon.issue.presentation.response.CouponCodeResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,5 +27,16 @@ public class CouponIssueController {
     ) {
         var couponCode = couponIssueService.issueCouponCode(couponIssueRequest.toDomain());
         return Api.success(CouponCodeResponse.from(couponCode));
+    }
+
+    /**
+     * 쿠폰 코드를 통한 쿠폰 사용 api
+     */
+    @PostMapping("/redeem")
+    public Api<Void> redeem(
+            @Valid @RequestBody CouponRedeemRequest couponRedeemRequest
+    ) {
+        couponIssueService.redeem(couponRedeemRequest.toDomain());
+        return Api.success();
     }
 }

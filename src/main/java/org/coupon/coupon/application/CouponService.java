@@ -28,6 +28,6 @@ public class CouponService {
 
     public Coupon getCoupon(Long couponId) {
         return couponRepository.findById(couponId)
-                .orElseThrow(() -> new CouponException(CouponExceptionStatus.NOT_FOUND));
+                .orElseThrow(() -> new CouponException(CouponExceptionStatus.NOT_FOUND_COUPON));
     }
 }

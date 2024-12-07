@@ -23,4 +23,11 @@ public class Api<T> {
                 data
         );
     }
+
+    public static Api<Void> success() {
+        return new Api<>(
+                HttpStatus.OK.value(),
+                null
+        );
+    }
 }

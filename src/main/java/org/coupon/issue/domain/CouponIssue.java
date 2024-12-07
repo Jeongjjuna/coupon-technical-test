@@ -23,4 +23,16 @@ public class CouponIssue {
                 .isUsed(command.getIsUsed())
                 .build();
     }
+
+    public void redeem() {
+        isUsed = true;
+    }
+
+    public boolean isUsed() {
+        return isUsed;
+    }
+
+    public boolean isNotIssuer(Long memberId) {
+        return !this.memberId.equals(memberId);
+    }
 }

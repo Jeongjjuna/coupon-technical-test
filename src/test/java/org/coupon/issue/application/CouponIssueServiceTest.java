@@ -1,11 +1,16 @@
 package org.coupon.issue.application;
 
+import org.coupon.common.exception.CouponException;
+import org.coupon.common.exception.CouponExceptionStatus;
 import org.coupon.coupon.domain.Coupon;
 import org.coupon.coupon.domain.CouponType;
 import org.coupon.coupon.infrastructure.CouponJpaRepository;
 import org.coupon.coupon.infrastructure.entity.CouponEntity;
+import org.coupon.issue.domain.CouponIssue;
 import org.coupon.issue.domain.CouponIssueCommand;
+import org.coupon.issue.domain.CouponRedeemCommand;
 import org.coupon.issue.infrastructure.jpa.CouponIssueJpaRepository;
+import org.coupon.issue.infrastructure.jpa.entity.CouponIssueEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +19,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @DisplayName("[service 통합테스트] CouponIssueService")
 @ActiveProfiles("test")
@@ -51,6 +58,83 @@ class CouponIssueServiceTest {
                 () -> assertThat(couponCode).matches(".*[A-Za-z].*"),
                 () -> assertThat(couponCode).matches(".*[0-9].*")
         );
+    }
+
+    @DisplayName("쿠폰코드를 사용할 수 있다.")
+    @Test
+    void redeemCouponCode() {
+        // given
+        Coupon coupon = createValidCoupon();
+        CouponIssue couponIssue = createValidCouponIssue(10L, coupon.getId());
+
+        CouponRedeemCommand command = CouponRedeemCommand.builder()
+                .memberId(couponIssue.getMemberId())
+                .couponCode(couponIssue.getCouponCode())
+                .build();
+
+        // when & then
+        assertDoesNotThrow(() -> couponIssueService.redeem(command));
+    }
+
+    @DisplayName("쿠폰코드 발급자가 아니라면 예외가 발생한다.")
+    @Test
+    void redeemCouponCodeNotIssuer() {
+        // given
+        Coupon coupon = createValidCoupon();
+        CouponIssue couponIssue = createValidCouponIssue(10L, coupon.getId());
+
+        CouponRedeemCommand command = CouponRedeemCommand.builder()
+                .memberId(999L)
+                .couponCode(couponIssue.getCouponCode())
+                .build();
+
+        // when & then
+        assertThatThrownBy(() -> couponIssueService.redeem(command))
+                .isInstanceOf(CouponException.class)
+                .extracting("errorStatus")
+                .isEqualTo(CouponExceptionStatus.NOT_COUPON_CODE_ISSUER);
+    }
+
+    @DisplayName("이미 사용된 쿠폰코드를 사용하려고 하면 예외가 발생한다.")
+    @Test
+    void redeemCouponCodeAlreadyUsed() {
+        // given
+        Long issuerId = 10L;
+        Coupon coupon = createValidCoupon();
+        CouponIssue couponIssue = createUsedCouponIssue(issuerId, coupon.getId());
+
+        CouponRedeemCommand command = CouponRedeemCommand.builder()
+                .memberId(issuerId)
+                .couponCode(couponIssue.getCouponCode())
+                .build();
+
+        // when & then
+        assertThatThrownBy(() -> couponIssueService.redeem(command))
+                .isInstanceOf(CouponException.class)
+                .extracting("errorStatus")
+                .isEqualTo(CouponExceptionStatus.ALREADY_USED_COUPON_CODE);
+    }
+
+    private CouponIssue createValidCouponIssue(Long memberId, Long couponId) {
+        CouponIssue couponIssue = CouponIssue.builder()
+                .couponCode("1234567891011abc")
+                .memberId(memberId)
+                .couponId(couponId)
+                .isUsed(false)
+                .build();
+        return couponIssueJpaRepository.save(CouponIssueEntity.from(couponIssue))
+                .toDomain();
+    }
+
+    private CouponIssue createUsedCouponIssue(Long memberId, Long couponId) {
+        CouponIssue couponIssue = CouponIssue.builder()
+                .couponCode("1234567891011abc")
+                .memberId(memberId)
+                .couponId(couponId)
+                .isUsed(true)
+                .build();
+        return couponIssueJpaRepository.save(CouponIssueEntity.from(couponIssue))
+                .toDomain();
     }
 
     private Coupon createValidCoupon() {

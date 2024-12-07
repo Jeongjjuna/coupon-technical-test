@@ -37,6 +37,8 @@ public class CouponIssueEntity {
         couponIssueEntity.memberId = issue.getMemberId();
         couponIssueEntity.couponId = issue.getCouponId();
         couponIssueEntity.isUsed = issue.getIsUsed();
+        couponIssueEntity.createdAt = issue.getCreatedAt();
+        couponIssueEntity.updatedAt = issue.getUpdatedAt();
         return couponIssueEntity;
     }
 

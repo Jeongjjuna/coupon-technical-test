@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.coupon.issue.application.CouponIssueService;
 import org.coupon.issue.domain.CouponIssueCommand;
 import org.coupon.issue.presentation.request.CouponIssueRequest;
+import org.coupon.issue.presentation.request.CouponRedeemRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +98,71 @@ class CouponIssueControllerTest {
         // when
         var result = mockMvc.perform(post("/v1/issues")
                 .content(objectMapper.writeValueAsString(couponIssueRequest))
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andDo(print());
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.result_code").value("400"));
+    }
+
+    @DisplayName("쿠폰 코드를 사용할 수 있다.")
+    @Test
+    void redeemCouponCode() throws Exception {
+        // given
+        CouponRedeemRequest couponRedeemRequest = CouponRedeemRequest.builder()
+                .memberId(1L)
+                .couponCode("1234567891011abc")
+                .build();
+        ;
+
+        // when
+        var result = mockMvc.perform(post("/v1/issues/redeem")
+                .content(objectMapper.writeValueAsString(couponRedeemRequest))
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andDo(print());
+        result.andExpect(status().isOk());
+    }
+
+    @DisplayName("쿠폰 코드 사용 요청시 memberId 는 null 일 수 없다.")
+    @Test
+    void redeemCouponCodeWithNullMemberId() throws Exception {
+        // given
+        CouponRedeemRequest couponRedeemRequest = CouponRedeemRequest.builder()
+                .memberId(null)
+                .couponCode("1234567891011abc")
+                .build();
+        ;
+
+        // when
+        var result = mockMvc.perform(post("/v1/issues/redeem")
+                .content(objectMapper.writeValueAsString(couponRedeemRequest))
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // then
+        result.andDo(print());
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.result_code").value("400"));
+    }
+
+    @DisplayName("쿠폰 코드 발급 요청시 couponCode 는 null 일 수 없다.")
+    @Test
+    void redeemCouponCodeWithNullCouponId() throws Exception {
+        // given
+        CouponRedeemRequest couponRedeemRequest = CouponRedeemRequest.builder()
+                .memberId(1L)
+                .couponCode(null)
+                .build();
+        ;
+
+        // when
+        var result = mockMvc.perform(post("/v1/issues/redeem")
+                .content(objectMapper.writeValueAsString(couponRedeemRequest))
                 .contentType(MediaType.APPLICATION_JSON)
         );
 

@@ -12,7 +12,6 @@ import java.util.List;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Slf4j
 @RestControllerAdvice
@@ -35,13 +34,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(CouponException.class)
-    public ErrorApi handleCouponException(Exception e) {
+    public ErrorApi handleCouponException(CouponException e) {
         log.error(e.getMessage());
 
         return ErrorApi.of(
-                NOT_FOUND.value(),
+                e.getErrorStatus().getHttpStatus().value(),
                 LocalDateTime.now(),
-                List.of(e.getMessage())
+                List.of(e.getErrorStatus().getMessage())
         );
     }
 
