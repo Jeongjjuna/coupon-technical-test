@@ -35,8 +35,7 @@ public class CouponIssueService {
         return couponCode;
     }
 
-    @Transactional
-    public void redeem(CouponRedeemCommand command) {
+    public synchronized void redeem(CouponRedeemCommand command) {
         CouponIssue couponIssue = getCouponIssue(command.getCouponCode());
         Coupon coupon = couponService.getCoupon(couponIssue.getCouponId());
 
