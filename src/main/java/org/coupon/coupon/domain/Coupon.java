@@ -28,9 +28,12 @@ public class Coupon {
                 .build();
     }
 
-    public void issue() {
-        if (totalCouponCount < issuedCouponCount + 1) {
+    public void subtractCouponCount() {
+        if (isSoldOut()) {
             throw new CouponException(CouponExceptionStatus.NO_MORE_COUPONS);
+        }
+        if (isSuspended()) {
+            throw new CouponException(CouponExceptionStatus.ALREADY_SUSPENDED_COUPON_CODE);
         }
         issuedCouponCount++;
     }
@@ -44,5 +47,9 @@ public class Coupon {
 
     public boolean isSuspended() {
         return suspendedAt != null;
+    }
+
+    public boolean isSoldOut() {
+        return totalCouponCount <= issuedCouponCount;
     }
 }

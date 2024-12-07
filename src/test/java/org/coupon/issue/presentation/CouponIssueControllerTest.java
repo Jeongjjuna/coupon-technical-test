@@ -35,7 +35,7 @@ class CouponIssueControllerTest {
 
     @DisplayName("쿠폰 코드를 발급할 수 있다.")
     @Test
-    void issueCouponCode() throws Exception {
+    void subtractCouponCountCouponCode() throws Exception {
         // given
         CouponIssueRequest couponIssueRequest = CouponIssueRequest.builder()
                 .couponId(1L)
@@ -59,7 +59,7 @@ class CouponIssueControllerTest {
 
     @DisplayName("쿠폰 코드 발급 요청시 memberId 는 null 일 수 없다.")
     @Test
-    void issueCouponCodeWithNullMemberId() throws Exception {
+    void subtractCouponCountCouponCodeWithNullMemberId() throws Exception {
         // given
         CouponIssueRequest couponIssueRequest = CouponIssueRequest.builder()
                 .couponId(1L)
@@ -84,7 +84,7 @@ class CouponIssueControllerTest {
 
     @DisplayName("쿠폰 코드 발급 요청시 couponId 는 null 일 수 없다.")
     @Test
-    void issueCouponCodeWithNullCouponId() throws Exception {
+    void subtractCouponCountCouponCodeWithNullCouponId() throws Exception {
         // given
         CouponIssueRequest couponIssueRequest = CouponIssueRequest.builder()
                 .couponId(null)

@@ -2,6 +2,8 @@ package org.coupon.issue.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.coupon.common.exception.CouponException;
+import org.coupon.common.exception.CouponExceptionStatus;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +26,13 @@ public class CouponIssue {
                 .build();
     }
 
-    public void redeem() {
+    public void redeem(Long memberId) {
+        if (isUsed()) {
+            throw new CouponException(CouponExceptionStatus.ALREADY_USED_COUPON_CODE);
+        }
+        if (isNotIssuer(memberId)) {
+            throw new CouponException(CouponExceptionStatus.NOT_COUPON_CODE_ISSUER);
+        }
         isUsed = true;
     }
 

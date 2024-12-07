@@ -99,7 +99,7 @@ class CouponServiceTest {
 
     @DisplayName("쿠폰을 발행해서 발급 수량을 증가시킨다.")
     @Test
-    void issueCoupon() {
+    void subtractCouponCountCoupon() {
         // given
         Coupon coupon = Coupon.builder()
                 .couponType(CouponType.BASIC)
@@ -112,7 +112,7 @@ class CouponServiceTest {
                 .getId();
 
         // when
-        Coupon issuedCoupon = couponService.issue(couponId);
+        Coupon issuedCoupon = couponService.subtractCouponCount(couponId);
 
         // then
         assertThat(issuedCoupon.getIssuedCouponCount()).isEqualTo(1);

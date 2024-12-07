@@ -42,7 +42,7 @@ class CouponIssueServiceTest {
 
     @DisplayName("정지된 쿠폰유형의 쿠폰코드를 발급할 수 없다.")
     @Test
-    void issueCouponCodeSuspendCoupon() {
+    void subtractCouponCountCouponCodeSuspendCoupon() {
         // given
         Coupon coupon = createSuspendCoupon();
 
@@ -62,7 +62,7 @@ class CouponIssueServiceTest {
     @Test
     void redeemCouponCodeSuspendCoupon() {
         Coupon coupon = createSuspendCoupon();
-        CouponIssue couponIssue = createValidCouponIssue(10L, coupon.getId());
+        CouponIssue couponIssue = createValidCouponSubtractCouponCount(10L, coupon.getId());
 
         CouponRedeemCommand command = CouponRedeemCommand.builder()
                 .memberId(couponIssue.getMemberId())
@@ -76,9 +76,9 @@ class CouponIssueServiceTest {
                 .isEqualTo(CouponExceptionStatus.ALREADY_SUSPENDED_COUPON_CODE);
     }
 
-    @DisplayName("쿠폰 코드를 발급할 수 있다.")
+    @DisplayName("쿠폰코드를 발급할 수 있다.")
     @Test
-    void issueCouponCode() {
+    void subtractCouponCountCouponCode() {
         // given
         Coupon coupon = createValidCoupon();
 
@@ -98,12 +98,30 @@ class CouponIssueServiceTest {
         );
     }
 
+    @DisplayName("쿠폰 수량 재고가 없다면 발급할 수 없다.")
+    @Test
+    void subtractCouponCountCouponCodeSoldOut() {
+        // given
+        Coupon coupon = createSoldOutCoupon();
+
+        CouponIssueCommand couponIssueCommand = CouponIssueCommand.builder()
+                .couponId(coupon.getId())
+                .memberId(999L)
+                .build();
+
+        // when & then
+        assertThatThrownBy(() -> couponIssueService.issueCouponCode(couponIssueCommand))
+                .isInstanceOf(CouponException.class)
+                .extracting("errorStatus")
+                .isEqualTo(CouponExceptionStatus.NO_MORE_COUPONS);
+    }
+
     @DisplayName("쿠폰코드를 사용할 수 있다.")
     @Test
     void redeemCouponCode() {
         // given
         Coupon coupon = createValidCoupon();
-        CouponIssue couponIssue = createValidCouponIssue(10L, coupon.getId());
+        CouponIssue couponIssue = createValidCouponSubtractCouponCount(10L, coupon.getId());
 
         CouponRedeemCommand command = CouponRedeemCommand.builder()
                 .memberId(couponIssue.getMemberId())
@@ -119,7 +137,7 @@ class CouponIssueServiceTest {
     void redeemCouponCodeNotIssuer() {
         // given
         Coupon coupon = createValidCoupon();
-        CouponIssue couponIssue = createValidCouponIssue(10L, coupon.getId());
+        CouponIssue couponIssue = createValidCouponSubtractCouponCount(10L, coupon.getId());
 
         CouponRedeemCommand command = CouponRedeemCommand.builder()
                 .memberId(999L)
@@ -139,7 +157,7 @@ class CouponIssueServiceTest {
         // given
         Long issuerId = 10L;
         Coupon coupon = createValidCoupon();
-        CouponIssue couponIssue = createUsedCouponIssue(issuerId, coupon.getId());
+        CouponIssue couponIssue = createUsedCouponSubtractCouponCount(issuerId, coupon.getId());
 
         CouponRedeemCommand command = CouponRedeemCommand.builder()
                 .memberId(issuerId)
@@ -153,7 +171,7 @@ class CouponIssueServiceTest {
                 .isEqualTo(CouponExceptionStatus.ALREADY_USED_COUPON_CODE);
     }
 
-    private CouponIssue createValidCouponIssue(Long memberId, Long couponId) {
+    private CouponIssue createValidCouponSubtractCouponCount(Long memberId, Long couponId) {
         CouponIssue couponIssue = CouponIssue.builder()
                 .couponCode("1234567891011abc")
                 .memberId(memberId)
@@ -164,7 +182,7 @@ class CouponIssueServiceTest {
                 .toDomain();
     }
 
-    private CouponIssue createUsedCouponIssue(Long memberId, Long couponId) {
+    private CouponIssue createUsedCouponSubtractCouponCount(Long memberId, Long couponId) {
         CouponIssue couponIssue = CouponIssue.builder()
                 .couponCode("1234567891011abc")
                 .memberId(memberId)
@@ -192,6 +210,18 @@ class CouponIssueServiceTest {
                 .description("description")
                 .totalCouponCount(100)
                 .issuedCouponCount(0)
+                .suspendedAt(LocalDateTime.now())
+                .build();
+        return couponJpaRepository.save(CouponEntity.from(coupon))
+                .toDomain();
+    }
+
+    private Coupon createSoldOutCoupon() {
+        Coupon coupon = Coupon.builder()
+                .couponType(CouponType.BASIC)
+                .description("description")
+                .totalCouponCount(100)
+                .issuedCouponCount(100)
                 .suspendedAt(LocalDateTime.now())
                 .build();
         return couponJpaRepository.save(CouponEntity.from(coupon))

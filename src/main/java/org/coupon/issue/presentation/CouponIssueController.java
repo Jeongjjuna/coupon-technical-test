@@ -25,7 +25,7 @@ public class CouponIssueController {
     public Api<CouponCodeResponse> create(
             @Valid @RequestBody CouponIssueRequest couponIssueRequest
     ) {
-        var couponCode = couponIssueService.issueCouponCode(couponIssueRequest.toDomain());
+        String couponCode = couponIssueService.issueCouponCode(couponIssueRequest.toDomain());
         return Api.success(CouponCodeResponse.from(couponCode));
     }
 

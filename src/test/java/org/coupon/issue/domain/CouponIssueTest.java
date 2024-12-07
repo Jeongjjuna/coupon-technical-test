@@ -16,9 +16,10 @@ class CouponIssueTest {
     @Test
     void redeemCouponCode() {
         // given
+        Long memberId = 1L;
         CouponIssue couponIssue = CouponIssue.builder()
                 .couponCode("1234567891011abc")
-                .memberId(1L)
+                .memberId(memberId)
                 .couponId(1L)
                 .isUsed(false)
                 .createdAt(LocalDateTime.of(2024, 11, 11, 0, 0))
@@ -26,7 +27,7 @@ class CouponIssueTest {
                 .build();
 
         // when
-        couponIssue.redeem();
+        couponIssue.redeem(memberId);
 
         // then
         assertThat(couponIssue.getIsUsed()).isEqualTo(true);

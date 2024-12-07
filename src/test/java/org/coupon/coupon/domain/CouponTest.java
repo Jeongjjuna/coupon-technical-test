@@ -36,7 +36,7 @@ class CouponTest {
 
     @DisplayName("쿠폰이 정지되었는지 알 수 있다.")
     @Test
-    void suspendCouponIsSuspended() {
+    void couponIsSuspended() {
         // given
         Coupon coupon = Coupon.builder()
                 .couponType(CouponType.BASIC)
@@ -48,6 +48,25 @@ class CouponTest {
 
         // when
         var result = coupon.isSuspended();
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @DisplayName("쿠폰이 수량이 더 이상 없는지 알 수 있다.")
+    @Test
+    void couponIsSoldOut() {
+        // given
+        Coupon coupon = Coupon.builder()
+                .couponType(CouponType.BASIC)
+                .description("description")
+                .totalCouponCount(100)
+                .issuedCouponCount(100)
+                .suspendedAt(LocalDateTime.now())
+                .build();
+
+        // when
+        var result = coupon.isSoldOut();
 
         // then
         assertThat(result).isTrue();
@@ -90,7 +109,7 @@ class CouponTest {
     @DisplayName("쿠폰 발행으로 발급 수량이 증가한다.")
     @ParameterizedTest
     @ValueSource(ints = {0, 99})
-    void issueCoupon(int issuedCoupon) {
+    void subtractCouponCountCoupon(int issuedCoupon) {
         // given
         Coupon coupon = Coupon.builder()
                 .couponType(CouponType.BASIC)
@@ -100,7 +119,7 @@ class CouponTest {
                 .build();
 
         // when
-        coupon.issue();
+        coupon.subtractCouponCount();
 
         // then
         assertThat(coupon.getIssuedCouponCount()).isEqualTo(issuedCoupon + 1);
@@ -109,7 +128,7 @@ class CouponTest {
     @DisplayName("잔여 수량이 없으면 쿠폰을 발급할 수 없다.")
     @ParameterizedTest
     @ValueSource(ints = {100, 101, 999})
-    void issueCouponWhenNoMoreCoupon(int issuedCoupon) {
+    void subtractCouponCountCouponWhenNoMoreCoupon(int issuedCoupon) {
         // given
         Coupon coupon = Coupon.builder()
                 .couponType(CouponType.BASIC)
@@ -119,7 +138,7 @@ class CouponTest {
                 .build();
 
         // when & then
-        assertThatThrownBy(coupon::issue)
+        assertThatThrownBy(coupon::subtractCouponCount)
                 .isInstanceOf(CouponException.class)
                 .extracting("errorStatus")
                 .isEqualTo(CouponExceptionStatus.NO_MORE_COUPONS);

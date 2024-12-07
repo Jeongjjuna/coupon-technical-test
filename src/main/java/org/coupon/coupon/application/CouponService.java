@@ -19,10 +19,9 @@ public class CouponService {
         return couponRepository.save(coupon);
     }
 
-    public Coupon issue(Long couponId) {
-        Coupon coupon = getCoupon(couponId);
-        coupon.issue();
-
+    public Coupon subtractCouponCount(Long couponId) {
+        Coupon coupon = getCouponWithLock(couponId);
+        coupon.subtractCouponCount();
         return couponRepository.save(coupon);
     }
 
@@ -36,4 +35,17 @@ public class CouponService {
         return couponRepository.findById(couponId)
                 .orElseThrow(() -> new CouponException(CouponExceptionStatus.NOT_FOUND_COUPON));
     }
+
+    public void checkAlreadySuspendedBy(Long couponId) {
+        Coupon coupon = getCoupon(couponId);
+        if (coupon.isSuspended()) {
+            throw new CouponException(CouponExceptionStatus.ALREADY_SUSPENDED_COUPON_CODE);
+        }
+    }
+
+    private Coupon getCouponWithLock(Long couponId) {
+        return couponRepository.findByIdWithLock(couponId)
+                .orElseThrow(() -> new CouponException(CouponExceptionStatus.NOT_FOUND_COUPON));
+    }
+
 }

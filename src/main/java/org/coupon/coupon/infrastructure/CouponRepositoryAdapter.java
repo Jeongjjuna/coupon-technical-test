@@ -24,4 +24,10 @@ public class CouponRepositoryAdapter implements CouponRepository {
         return couponRepository.findById(couponId)
                 .map(CouponEntity::toDomain);
     }
+
+    @Override
+    public Optional<Coupon> findByIdWithLock(Long couponId) {
+        return couponRepository.findByIdWithLock(couponId)
+                .map(CouponEntity::toDomain);
+    }
 }
