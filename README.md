@@ -40,6 +40,20 @@ main 패키지 java.org.coupon
   - infrastructure : 레포지토리등의 외부 인프라 역할
   - presentation : 컨트롤러 역할
 
+test 패키지 java.org.coupon
+- concurrency
+  - 쿠폰 발급 동시성 테스트
+  - 쿠폰 사용 동시성 테스트
+- coupon
+  - application : 서비스 통합 테스트(인메모리 DataBase 활용)
+  - domain : 비즈니스 도메인 로직 단위테스트
+  - presentation : 컨트롤러 단위 테스트(서비스 계층 stubbing)
+- issue
+  - application : 서비스 통합 테스트(인메모리 DataBase 활용)
+  - domain : 비즈니스 도메인 로직 단위테스트
+  - presentation : 컨트롤러 단위 테스트(서비스 계층 stubbing)
+
+
 ---
 
 ## ⛄ API 명세서
