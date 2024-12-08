@@ -21,5 +21,6 @@ CREATE TABLE coupon_issue
     `coupon_id`   BIGINT      NOT NULL COMMENT '쿠폰 id',
     `is_used`     BOOLEAN     NOT NULL COMMENT '쿠폰 사용 여부', -- 사용되면 true
     `created_at`  TIMESTAMP   NOT NULL COMMENT '쿠폰 발급 시간', -- 쿠폰 발급 시간
-    `updated_at`  TIMESTAMP   NOT NULL COMMENT '쿠폰 사용 시간'  -- 쿠폰 사용 시간
+    `updated_at`  TIMESTAMP   NOT NULL COMMENT '쿠폰 사용 시간',  -- 쿠폰 사용 시간
+    INDEX (`coupon_id`)
 )

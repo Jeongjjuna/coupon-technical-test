@@ -11,7 +11,7 @@ spring:
     init:
       mode: always
       platform: h2
-      schema-locations: classpath:/schema.sql
+      schema-locations: classpath:/init-schema.sql
 
   datasource:
     url: jdbc:h2:mem:coupon-test;MODE=MYSQL;DB_CLOSE_DELAY=-1

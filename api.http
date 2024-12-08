@@ -3,8 +3,8 @@ POST http://localhost:8080/v1/coupons
 Content-Type: application/json
 
 {
-  "coupon_type": null,
-  "description": null,
+  "coupon_type": "BASIC",
+  "description": "기본 타입",
   "total_coupon_count": 100
 }
 
@@ -14,7 +14,7 @@ Content-Type: application/json
 
 {
   "member_id": 1,
-  "coupon_id": 1
+  "coupon_id": 2
 }
 
 ### 쿠폰 사용 요청
@@ -23,7 +23,7 @@ Content-Type: application/json
 
 {
   "member_id": 1,
-  "coupon_code": "1733644386733VXL"
+  "coupon_code": "1733646482292DZC"
 }
 
 ### 쿠폰 일괄 정히

@@ -1,4 +1,48 @@
-## API 명세서
+## ⛄개발환경
+- macOS
+- JDK 21
+- Language : Java
+- FrameWork : Spring Boot
+- Build : Gradle
+- DB Framework : JPA
+- DataBase : 인메모리 H2 DataBase
+
+---
+
+## ⛄테스트
+[macOS 기준]
+- 테스트 실행 & 결과 레포트 확인
+```
+./gradlew clean test && open build/reports/tests/test/index.html
+```
+
+## ⛄빌드 / 실행방법
+[macOS 기준]
+- 프로젝트 빌드하기 & 실행하기
+```
+./gradlew clean build && java -jar build/libs/coupon-0.0.1-SNAPSHOT.jar
+```
+
+---
+
+## 🎄프로젝트 구조
+main 패키지 java.org.coupon
+- common
+  - 공통 응답, 예외 핸들러, 설정 파일
+- coupon : 레이어드 아키텍처 구조로 개발
+  - application : 서비스 역할
+  - domain : 핵심 비즈니스 도메인
+  - infrastructure : 레포지토리등의 외부 인프라 역할
+  - presentation : 컨트롤러 역할
+- issue : 레이어드 아키텍처 구조로 개발
+  - application : 서비스 역할
+  - domain : 핵심 비즈니스 도메인
+  - infrastructure : 레포지토리등의 외부 인프라 역할
+  - presentation : 컨트롤러 역할
+
+---
+
+## ⛄ API 명세서
 
 ![](https://img.shields.io/static/v1?label=&message=GET&color=red)
 ![](https://img.shields.io/static/v1?label=&message=POST&color=blue)
@@ -6,7 +50,7 @@
 ### 쿠폰 등록 API
 
 > ![](https://img.shields.io/static/v1?label=&message=POST&color=blue) <br>
-> localhost:8080/**/v1/coupons**
+> localhost:8080/**v1/coupons**
 
 <details>
 <summary>상세보기</summary>
@@ -63,7 +107,7 @@
 ### 쿠폰 코드 발급 요청 API
 
 > ![](https://img.shields.io/static/v1?label=&message=POST&color=blue) <br>
-> localhost:8080/**/v1/issues**
+> localhost:8080/**v1/issues**
 
 
 <details markdown="1">
@@ -91,7 +135,7 @@
     }
   ```
 
-400 NotFound : 정지된 쿠폰에 대해 발급요청한 경우
+409 NotFound : 정지된 쿠폰에 대해 발급요청한 경우
 
   ```
     {
@@ -106,12 +150,13 @@
 </details>
 <br>
 
+
 ---
 
 ### 쿠폰 사용 API
 
 > ![](https://img.shields.io/static/v1?label=&message=POST&color=blue) <br>
-> localhost:8080/**/v1/issues/redeem**
+> localhost:8080/**v1/issues/redeem**
 
 
 <details>
@@ -157,7 +202,7 @@
 ### 쿠폰 일괄 정지 API
 
 > ![](https://img.shields.io/static/v1?label=&message=POST&color=blue) <br>
-> localhost:8080/**/v1/coupons/{id}/suspend**
+> localhost:8080/**v1/coupons/{id}/suspend**
 
 
 <details>
@@ -198,9 +243,10 @@
 </details>
 <br>
 
+
 ---
 
-### 요구사항
+## 🎄요구사항
 
 - [x] 쿠폰을 생성 할 수 있다.(create)
     - [x] 쿠폰은 타입당 n개 생성 할 수 있다.
@@ -215,7 +261,9 @@
     - [x] 정지된 쿠폰에 대한 쿠폰 코드를 발급할 수 없다.
     - [x] 정지된 쿠폰에 대한 쿠폰 코드를 사용할 수 없다.
 
-### 동시성 고려
+---
+
+## 🎄동시성 고려
 
 - [x] 1개 쿠폰 코드에 대해 여러번 사용되면 안된다.
     - 쿠폰발급은 트래픽이 몰릴 수 있지만, 실제 쿠폰 사용은 트래픽 몰림까지는 아닐거라고 예상
@@ -224,3 +272,16 @@
     - 쿠폰 조회시 비관적 쓰기락을 활용해서 DB를 잠금.
       - DB 락보다는 애플리케이션 관점에서 lock 매커니즘을 사용하는 것이 더 좋을 수 있다.
       - 레이어드 아키텍처에서 DataBase 에 접근하는 것보다는, Controller 에서 lock 으로 필터링하는게 좋을 수 있다.
+
+---
+
+## 🎄누적되는 쿠폰 데이터 조회 성능 고려
+- coupon_id 를 통해 특정 coupon_id 에 해당하는 coupon_issue 데이터를 조회할 일이 많을 것이라고 예상됨.
+- coupon_id 에 인덱스를 적용.
+```sql
+SELECT *
+FROM coupon_issue
+WHERE
+    coupon_id = 1
+  AND is_used = TRUE;
+```
